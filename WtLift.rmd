@@ -68,7 +68,7 @@ table(pred,WLEtrain1_test$classe)
 </table>
 <br>
 
-Now that we have our trained model, which performed well on our training data subset, we can apply it to the actual Testing dataset:
+Since our random forest model was built with 25 bootsraps, we can be reasonably confident that the machine learning algorithm will perform well on the test data.  Now that we have our trained model, which performed well on our training data subset, we can apply it to the actual Testing dataset:
 ```{r eval=FALSE}
 pred1 = predict(modFit,WLEtest1)
 ```

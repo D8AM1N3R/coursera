@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Coursera : Course Materials &amp; Projects">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Coursera</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/D8AM1N3R/coursera">View on GitHub</a>
+
+          <h1 id="project_title">Coursera</h1>
+          <h2 id="project_tagline">Course Materials &amp; Projects</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/D8AM1N3R/coursera/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/D8AM1N3R/coursera/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p></p>
+
+<p></p>
+
+<p>
+
+</p>
+
+<p></p>
+
+
+
+<p>
+
+</p>
+
+
+
+code{white-space: pre;}
+
+<p></p>
+
+
+
+
+  pre:not([class]) {
+    background-color: white;
+  }
+
+
+
+
+<p></p>
+
+<p></p>
+
+
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+<div>
+
+
+
+
+<div id="weight-lifting-exercise-project">
+<h1>
+<a id="weight-lifting-exercise-project" class="anchor" href="#weight-lifting-exercise-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Weight Lifting Exercise Project</h1>
+<p>This project asked us to classify a weight lifting maneuver (measured by motion sensors attached to a belt, glove, arm band, and the weight). The possible classes were labeled A through E, with A being the correct procedure and B-E being various incorrect procedures. The paper (<a href="http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf">http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf</a>) that the creators of the dataset published discusses their hypotheses, methodologies, and results–namely that they were able to achieve a 98.2% weighted accuracy using Random Forests and a 2.5s window of data capture.</p>
+<p>First, we read the data into 2 datasets, WLEtrain and WLEtest:</p>
+<pre><code>root = 'C:/Users/Ben/Documents/R/ML Data/PML'
+WLEtrain = read.csv(paste(root,'pml-training.csv',sep="/"))
+WLEtest = read.csv(paste(root,'pml-testing.csv',sep="/"))</code></pre>
+<p>Next, after observing that many of the columns have an abundance of missing values (in the forms of NA and #Div/0!), we must drop the columns that are mostly missing. For this we used a threshold of at most 10% NA/missing, but this value could be changed depending on one’s confidence in imputing the missing values.</p>
+<pre><code>WLEtrain = WLEtrain[,8:160]
+cols = names(WLEtrain)
+n = 1
+keep = c()
+thresh = 0.1*dim(WLEtrain)[1]
+for (i in cols){
+  if (length(WLEtrain[[i]][is.na(WLEtrain[[i]])])+length(WLEtrain[[i]][WLEtrain[[i]]==""]) &lt; thresh){
+    keep[n]=i
+    n = n+1
+}
+}
+WLEtrain1 = WLEtrain[,c(keep)]</code></pre>
+<p>Next, since we likely do not need all 19,622 to build a random forest model, we will pare down our training dataset into a subset to build the model from and a subset to test against.</p>
+<pre><code>set.seed(1234)
+library(caret)
+ind = createDataPartition(y=WLEtrain1$classe,p=0.85,list=FALSE)
+WLEtrain1_train = WLEtrain1[-ind,]
+WLEtrain1_test = WLEtrain1[ind,]</code></pre>
+<p>One of the reasons that Random Forests are so popular is that they are able to handle correlated variables well whereas many other models require correlated variables to be either combined or eliminated. Thus, even though we see 19 unique variable pairs that have a high absolute correlation (&gt; 0.8), we chose to leave them in since the final model should pick the most useful of the correlated features.</p>
+<pre><code>modFit = train(classe~.,data=WLEtrain1_train,method="rf",prox=TRUE)
+modFit</code></pre>
+<p>As you can see, the model reached optimal performance with 27 selected variables, achieving an Accuracy of 0.9486354. Once we run this random forest model on the other 85% of the training set we see an Accuracy of 0.9595324:</p>
+<pre><code>pred = predict(modFit,WLEtrain1_test)
+table(pred,WLEtrain1_test$classe)</code></pre>
+<table border="1">
+<tr>
+<td> </td>
+<td>
+A
+</td>
+<td>
+B
+</td>
+<td>
+C
+</td>
+<td>
+D
+</td>
+<td>
+E
+</td>
+</tr>
+<tr>
+<td>
+A
+</td>
+<td>
+4693
+</td>
+<td>
+85
+</td>
+<td>
+1
+</td>
+<td>
+6
+</td>
+<td>
+5
+</td>
+</tr>
+<tr>
+<td>
+B
+</td>
+<td>
+39
+</td>
+<td>
+2998
+</td>
+<td>
+59
+</td>
+<td>
+0
+</td>
+<td>
+28
+</td>
+</tr>
+<tr>
+<td>
+C
+</td>
+<td>
+4
+</td>
+<td>
+142
+</td>
+<td>
+2834
+</td>
+<td>
+176
+</td>
+<td>
+30
+</td>
+</tr>
+<tr>
+<td>
+D
+</td>
+<td>
+6
+</td>
+<td>
+3
+</td>
+<td>
+15
+</td>
+<td>
+2547
+</td>
+<td>
+45
+</td>
+</tr>
+<tr>
+<td>
+E
+</td>
+<td>
+1
+</td>
+<td>
+0
+</td>
+<td>
+0
+</td>
+<td>
+5
+</td>
+<td>
+2958
+</td>
+</tr>
+</table>
+<p><br></p>
+<p>Now that we have our trained model, which performed well on our training data subset, we can apply it to the actual Testing dataset:</p>
+<pre><code>pred1 = predict(modFit,WLEtest1)</code></pre>
+<p>Once we loaded the results into the evaluation system we acheieved a 20 out of 20, 100% accuracy. <br></p>
+</div>
+
+<p></p>
+</div>
+
+
+
+
+
+
+
+<p>
+</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Coursera maintained by <a href="https://github.com/D8AM1N3R">D8AM1N3R</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

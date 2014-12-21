@@ -41,7 +41,7 @@ One of the reasons that Random Forests are so popular is that they are able to h
 modFit = train(classe~.,data=WLEtrain1_train,method="rf",prox=TRUE)
 modFit
 ```
-As you can see, the model reached optimal performance with 27 selected variables, achieving an Accuracy of 0.9486354.  Once we run this random forest model on the other 85% of the training set we see an Accuracy of 0.9595324:
+As you can see, the model reached optimal performance with 27 selected variables, achieving an Accuracy of 94.86%.  Once we run this random forest model on the other 85% of the training set we see an Accuracy of 95.95%:
 ```{r eval=FALSE}
 pred = predict(modFit,WLEtrain1_test)
 table(pred,WLEtrain1_test$classe)

@@ -73,5 +73,5 @@ Since our random forest model was built with 25 bootsraps, we can be reasonably 
 pred1 = predict(modFit,WLEtest1)
 ```
 
-Once we loaded the results into the evaluation system we acheieved a 20 out of 20, 100% accuracy.
+After loading the results into the evaluation system we acheieved a 20 out of 20, 100% accuracy.
 <br>
